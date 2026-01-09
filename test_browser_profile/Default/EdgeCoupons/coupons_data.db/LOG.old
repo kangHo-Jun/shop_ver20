@@ -1,0 +1,6 @@
+2026/01/08-14:49:35.128 4ff8 Reusing MANIFEST C:\Users\DS-Sales0\Desktop\shop_ver10-main\test_browser_profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/01/08-14:49:35.129 4ff8 Recovering log #4
+2026/01/08-14:49:35.129 4ff8 Reusing old log C:\Users\DS-Sales0\Desktop\shop_ver10-main\test_browser_profile\Default\EdgeCoupons/coupons_data.db/000004.log 
+2026/01/08-14:49:35.191 55d4 Level-0 table #8: started
+2026/01/08-14:49:35.194 55d4 Level-0 table #8: 681391 bytes OK
+2026/01/08-14:49:35.195 55d4 Delete type=0 #4

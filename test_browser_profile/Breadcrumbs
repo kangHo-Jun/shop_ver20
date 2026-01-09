@@ -1,0 +1,75 @@
+0:01:12 Browser1 Switch from Tab1 to Tab3 at 2
+0:01:12 SwitchTab_Click
+0:01:14 Widget Closed: TooltipAura
+0:01:14 CloseTab_NoAlertIndicator
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseWebContentsAt
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseTabs
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_TabClosable
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_NotClosingAll
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseWebContentses
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseWebContentses_FastShutdown
+0:01:14 Microsoft.Shutdown.TabStripModel.ShouldRunUnloadListenerBeforeClosing_true
+0:01:14 Microsoft.Shutdown.TabStripModel.RunUnloadListenerBeforeClosing_true
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_NotClosedAll
+0:01:14 Tab3 BeforeUnload proceed:true
+0:01:14 Tab3 StartNav8 #renderer-script #link
+0:01:14 Tab3 FinishNav8
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseWebContentsAt
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseTabs
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_TabClosable
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_NotClosingAll
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseWebContentses
+0:01:14 Microsoft.Shutdown.TabStripModel.CloseWebContentses_FastShutdown
+0:01:14 Microsoft.Shutdown.TabStripModel.ShouldRunUnloadListenerBeforeClosing_false
+0:01:14 Microsoft.Shutdown.TabStripModel.RunUnloadListenerBeforeClosing_false
+0:01:14 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_ClosedAll
+0:01:14 Microsoft.Shutdown.TabStripModel.SendDetachWebContentsNotifications
+0:01:14 Browser1 Close Tab3 at 2
+0:01:14 Tab3 WebContentsDestroyed
+0:01:16 CloseTab_NoAlertIndicator
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseWebContentsAt
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseTabs
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_TabClosable
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_NotClosingAll
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseWebContentses
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseWebContentses_FastShutdown
+0:01:16 Microsoft.Shutdown.TabStripModel.ShouldRunUnloadListenerBeforeClosing_true
+0:01:16 Microsoft.Shutdown.TabStripModel.RunUnloadListenerBeforeClosing_true
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_NotClosedAll
+0:01:16 Tab2 BeforeUnload proceed:true
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseWebContentsAt
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseTabs
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_TabClosable
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_NotClosingAll
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseWebContentses
+0:01:16 Microsoft.Shutdown.TabStripModel.CloseWebContentses_FastShutdown
+0:01:16 Microsoft.Shutdown.TabStripModel.ShouldRunUnloadListenerBeforeClosing_false
+0:01:16 Microsoft.Shutdown.TabStripModel.RunUnloadListenerBeforeClosing_false
+0:01:16 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_ClosedAll
+0:01:16 Microsoft.Shutdown.TabStripModel.SendDetachWebContentsNotifications
+0:01:16 Browser1 Close Tab2 at 1
+0:01:16 Tab2 WebContentsDestroyed
+0:01:20 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp
+0:00:00 Startup
+0:00:00 Microsoft.DeleteProfileHelper.CleanUpEphemeralProfiles
+0:00:00 Microsoft.DeleteProfileHelper.CleanUpDeletedProfiles
+0:00:00 Microsoft.NewBrowser_Normal
+0:00:00 Microsoft.BrowserList.AddBrowser
+0:00:00 Tab1 StartNav1 #auto_toplevel
+0:00:00 Browser1 Insert active Tab1 at 0
+0:00:00 Tab1 FinishNav1
+0:00:00 Tab1 PageLoad
+0:00:05 Tab1 StartNav2 #typed
+0:00:05 Tab1 FinishNav2
+0:00:05 Tab1 PageLoad
+0:00:07 Tab1 StartNav3 #typed
+0:00:07 Tab1 FinishNav3
+0:00:07 Tab1 PageLoad
+0:00:09 Tab1 StartNav4 #typed
+0:00:09 Tab1 FinishNav4
+0:00:09 Tab1 PageLoad
+0:00:52 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp

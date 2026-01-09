@@ -1,0 +1,652 @@
+<html lang="ko"><head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <title>거래명세서</title>
+  </head>
+  <body>
+    
+	
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+    -->
+
+	<style type="text/css">
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FAFAFA;
+  font-size: 0.8rem;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+.page {
+  width: 21cm;
+  min-height: 29.7cm;
+  padding: 1cm;
+  margin: 1cm auto;
+  border: 1px #D3D3D3 solid;
+  border-radius: 5px;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  .page {
+    margin: 0;
+    border: initial;
+    border-radius: initial;
+    width: initial;
+    min-height: initial;
+    box-shadow: initial;
+    background: initial;
+    page-break-after: always;
+  }
+}
+
+.table {
+    border-color: #000000;
+}
+
+
+@media print {
+    .not_print {display:none;}
+}
+
+.table-item .td-item {
+	padding: 0.15rem 0.25rem;
+	vertical-align: middle;
+}
+
+.table-item .div-item {
+	height: 55px;
+    overflow: hidden;
+	display : flex;
+	justify-content : center;
+	align-items : center;
+}
+
+.td-header {
+	 text-align: center; 
+	 font-weight: bold;
+	 vertical-align: middle;
+ }
+
+</style>
+
+<script>
+
+		$(function () {
+
+			//인쇄
+			$( "body" ).on( "click", ".print_btn", function() {
+				print()
+			});
+
+			
+
+		});
+
+	
+</script>
+
+<div class="book">
+  <div class="page">
+
+		<table class="table table-sm table-bordered">
+			<tbody>
+			<tr height="60">
+				<td style="text-align:center ">  <b><font size="6px" style="word-spacing:1">거래명세서</font><font size="3px">(공급받는자보관용)</font></b><button type="button" class="btn btn-sm btn-success not_print print_btn float-right">인쇄</button></td>
+			</tr>
+			</tbody>
+		</table>
+
+		<!-- 
+sday
+vendcd
+ptaxno
+ptel
+taxno
+pname
+pfax
+vend_name
+phoneno
+pchiefname
+empname
+chiefname
+fax
+paddr
+address
+puptae
+pupjong
+uptae
+upjong
+		-->
+
+		<table class="table table-sm table-bordered">
+			<colgroup>
+				<col style="width:100px">
+				<col style="width:100px">
+				<col style="width:100px">
+				<col style="width:100px">
+				<col style="width:100px">
+				<col>
+			</colgroup>
+			<tbody>
+			<tr>
+				<td class="td-header">출고번호</td>
+				<td class="text-center">2601020260</td>
+				<td class="td-header">발행일</td>
+				<td class="text-center">2026-01-02</td>
+				<td class="td-header">거래처코드</td>
+				<td class="text-center">00160003</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table class="table table-sm table-bordered">
+			<colgroup>
+				<col style="width:25px">
+				<col style="width:64px">
+				<col style="width:64px">
+				<col style="width:64px">
+				<col style="width:64px">
+				<col style="width:25px">
+				<col style="width:64px">
+				<col style="width:64px">
+				<col style="width:64px">
+				<col style="width:64px">
+				<col>
+			</colgroup>
+			<tbody>
+			<tr>
+				<td rowspan="5" class="td-header" style="width:25px;">공<br><br>급<br><br>자</td>
+				<td class="td-header">등록번호</td>
+				<td colspan="2">137-81-02411</td>
+				
+				<td></td>
+				<td rowspan="5" class="td-header" style="width:25px;">공급받는자</td>
+				<td class="td-header">등록번호</td>
+				<td colspan="3">138-81-10613</td>
+				
+			</tr>
+			<tr>
+				
+				<td class="td-header">상호</td>
+				<td colspan="2">영림임업(주)</td>
+				
+				<td></td>
+				
+				<td class="td-header">상호</td>
+				<td>안양)㈜대산</td>
+				<td class="td-header">TEL.</td>
+				<td>031-388-3833</td>
+			</tr>
+			<tr>
+				
+				<td class="td-header">성명</td>
+				<td>황복현</td>
+				<td class="td-header">담당자</td>
+				<td>안양</td>
+				
+				<td class="td-header">성명</td>
+				<td></td>
+				<td class="td-header">FAX.</td>
+				<td>0</td>
+			</tr>
+			<tr>
+				
+				<td class="td-header">주소</td>
+				<td colspan="3">인천 남동구 고잔동 729-4 159B-5L</td>
+				
+
+				
+				<td class="td-header">주소</td>
+				<td colspan="3"></td>
+			</tr>
+			<tr>
+				
+				<td class="td-header">업태</td>
+				<td>제조도매</td>
+				<td class="td-header">업종</td>
+				<td>목재및가공품외</td>
+				
+				<td class="td-header">업태</td>
+				<td></td>
+				<td class="td-header">업종</td>
+				<td></td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table class="table table-sm table-bordered table-item">
+			<colgroup>
+				<col style="width:30px">
+				<col style="width:70px">
+				<col style="width:150px">
+				<col style="width:120px">
+				<col style="width:50px">
+				<col style="width:70px">
+				<col style="width:70px">
+				<col>
+			</colgroup>
+			<tbody>
+			<tr>
+				<td class="td-header">NO</td>
+				<td class="td-header">색상</td>
+				<td class="td-header">품명</td>
+				<td class="td-header">규격</td>
+				<td class="td-header">수량</td>
+				<td class="td-header">단가</td>
+				<td class="td-header">공급가액</td>
+				<td class="td-header">비고</td>
+			</tr>
+			
+			<tr>
+				<td class="td-item"><div class="div-item">1</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">PS047</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">일체형문틀(식기X)</div></td>
+				<td class="td-item"><div class="div-item">90*900*2100/ N</div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">74,636</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">74,636</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">신흥목재  키홈좌 상 1142</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">2</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;"></div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">키홈가공</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">3,000</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">3,000</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">3</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">집성</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">무메문틀(30T이하)(식기X)</div></td>
+				<td class="td-item"><div class="div-item">110*1050*2200/ N</div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">64,499</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">64,499</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">휴네트웍스 전체소재두께30MM</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">4</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">집성</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">무메문틀(30T이하)(식기X)</div></td>
+				<td class="td-item"><div class="div-item">110*930*2200/ N</div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">64,499</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">64,499</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">휴네트웍스 전체소재두께30MM</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">5</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">집성</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">무메문틀(30T이하)(식기X)</div></td>
+				<td class="td-item"><div class="div-item">110*830*2200/ N</div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">58,999</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">58,999</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">휴네트웍스 전체소재두께30MM</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">6</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림169 PS130</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">401걸레받이(40*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">30.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,096</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">62,880</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">2일저녁 2일저녁 두현숙/첸트룸</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">7</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림06</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">80MM평판(80*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">29.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">3,313</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">96,077</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">두현숙/원식건설</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">8</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림06</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">마이너스몰딩(25*15)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">41.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,560</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">104,960</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">두현숙/원식건설</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">9</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림06</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">60MM평판(60*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">11.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,709</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">29,799</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">두현숙/원식건설</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">10</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">PS098</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">30MM평판(30*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">40.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">1,973</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">78,920</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">김태환/오하이오</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">11</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림06</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">40MM평판(40*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">15.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,264</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">33,960</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">두현숙/사팔우드</div></td>
+			</tr>
+			</tbody></table></div><div class="page"><table class="table table-sm table-bordered table-item"><colgroup><col style="width:30px"><col style="width:70px"><col style="width:150px"><col style="width:120px"><col style="width:50px"><col style="width:70px"><col style="width:70px"><col></colgroup><tbody><tr><td class="td-header">NO</td><td class="td-header">색상</td><td class="td-header">품명</td><td class="td-header">규격</td><td class="td-header">수량</td><td class="td-header">단가</td><td class="td-header">공급가액</td><td class="td-header">비고</td></tr>
+			
+			<tr>
+				<td class="td-item"><div class="div-item">12</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">40MM평판(40*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">32.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,021</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">64,672</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">두현숙/사팔우드</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">13</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">60MM평판(60*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">24.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,418</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">58,032</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">두현숙/사팔우드</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">14</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림194 PS160</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">마이너스몰딩(25*15)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">20.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,285</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">45,700</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">15</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림194 PS160</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">401걸레받이(40*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">33.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,096</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">69,168</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">16</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">PVC 마이너스 25 래핑</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">140.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">3,132</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">438,480</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">17</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">30MM평판(30*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">120.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">1,761</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">211,320</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">18</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">40MM평판(40*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">180.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,021</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">363,780</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">19</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">60MM평판(60*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">120.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,418</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">290,160</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">20</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">마이너스몰딩(25*15)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">140.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,285</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">319,900</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">21</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림116 중백색</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">601걸레받이(60*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">80.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,709</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">216,720</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">22</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림195 PS170</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">마이너스몰딩(25*15)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">120.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,285</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">274,200</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">23</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림169 PS130</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">100MM평판(100*9)</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">38.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">3,525</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">133,950</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">24</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림109</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">대형직각 템바보드4*8</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">3.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">108,184</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">324,552</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">25</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">영림109</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">상하부 마감 15T용</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">6.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">2,906</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">17,436</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;"></div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">26</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;"></div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">운반비</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">44,000</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">44,000</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">당하동出</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">27</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;"></div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">운반비</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">66,000</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">66,000</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">잠실동出  오하이오</div></td>
+			</tr>
+			
+			
+			<tr>
+				<td class="td-item"><div class="div-item">28</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;"></div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">운반비</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">104,500</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">104,500</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">잠실동出  오하이오</div></td>
+			</tr>
+			</tbody></table></div><div class="page"><table class="table table-sm table-bordered table-item"><colgroup><col style="width:30px"><col style="width:70px"><col style="width:150px"><col style="width:120px"><col style="width:50px"><col style="width:70px"><col style="width:70px"><col></colgroup><tbody><tr><td class="td-header">NO</td><td class="td-header">색상</td><td class="td-header">품명</td><td class="td-header">규격</td><td class="td-header">수량</td><td class="td-header">단가</td><td class="td-header">공급가액</td><td class="td-header">비고</td></tr>
+			
+			<tr>
+				<td class="td-item"><div class="div-item">29</div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;"></div></td>
+				<td class="td-item"><div class="div-item" style="text-align: center;">운반비</div></td>
+				<td class="td-item"><div class="div-item">/ </div></td>
+				<td class="td-item"><div class="div-item">1.0</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">60,500</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: end;">60,500</div></td>
+				<td class="td-item"><div class="div-item" style="justify-content: start;">반포동出  김태한대리</div></td>
+			</tr>
+			
+			
+			</tbody>
+		</table>
+
+		<table class="table table-sm table-bordered">
+			<colgroup>
+				<col style="width:25%">
+				<col style="width:25%">
+				<col style="width:25%">
+				<col style="width:25%">
+			</colgroup>
+			<tbody>
+			<tr>
+				<td class="td-header">전잔액</td>
+				<td class="td-header">매출액</td>
+				<td class="td-header">입금액</td>
+				<td class="td-header">현잔액</td>
+			</tr>
+			<tr>
+				<td style="text-align: right;">0&nbsp;</td>
+				<td style="text-align: right;">3,775,299&nbsp;</td>
+				<td style="text-align: right;">0&nbsp;</td>
+				<td style="text-align: right;">3,775,299&nbsp;</td>
+			</tr>
+			</tbody>
+		</table>
+
+  </div>
+</div>
+
+
+
+  
+
+
+
+</body></html>
