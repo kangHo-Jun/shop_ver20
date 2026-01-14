@@ -44,10 +44,11 @@ exit
 echo [3/3] 디버그 모드로 Edge 브라우저 실행 중...
 echo.
 
-REM Edge 브라우저를 디버그 포트 9333으로 실행
+REM Edge 브라우저를 디버그 포트 9333으로 실행 (기존 Default 프로필 사용)
 start "" "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" ^
   --remote-debugging-port=9333 ^
-  --user-data-dir="%cd%\edge_automation_profile" ^
+  --user-data-dir="C:\Users\DS-Sales0\AppData\Local\Microsoft\Edge\User Data" ^
+  --profile-directory="Default" ^
   --no-first-run ^
   --no-default-browser-check ^
   http://door.yl.co.kr/oms/main.jsp

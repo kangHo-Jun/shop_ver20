@@ -15,9 +15,21 @@ class Config:
         
         # URLs
         self.YOUNGRIM_URL = os.getenv("YOUNGRIM_URL", "http://door.yl.co.kr/oms/main.jsp")
-        self.YOUNGRIM_LEDGER_URL = os.getenv("YOUNGRIM_LEDGER_URL", "http://door.yl.co.kr/oms/ledger_list.jsp")
-        self.YOUNGRIM_ESTIMATE_URL = os.getenv("YOUNGRIM_ESTIMATE_URL", "http://door.yl.co.kr/oms/estimate_list.jsp")
         self.DOWNLOAD_INTERVAL_SEC = int(os.getenv("DOWNLOAD_INTERVAL_SEC", 1800))
+
+        # Multiple page URLs for ledger and estimate (산업/임업 구분)
+        self.YOUNGRIM_LEDGER_URLS = [
+            "http://door.yl.co.kr/oms/ledger_list.jsp?search_action=&younglim_gubun=%EC%82%B0%EC%97%85",  # 산업
+            "http://door.yl.co.kr/oms/ledger_list.jsp?search_action=&younglim_gubun=%EC%9E%84%EC%97%85"   # 임업
+        ]
+        self.YOUNGRIM_ESTIMATE_URLS = [
+            "http://door.yl.co.kr/oms/estimate_list.jsp?search_action=&younglim_gubun=%EC%82%B0%EC%97%85",  # 산업
+            "http://door.yl.co.kr/oms/estimate_list.jsp?search_action=&younglim_gubun=%EC%9E%84%EC%97%85"   # 임업
+        ]
+
+        # Legacy single URL (deprecated, kept for backward compatibility)
+        self.YOUNGRIM_LEDGER_URL = self.YOUNGRIM_LEDGER_URLS[0]
+        self.YOUNGRIM_ESTIMATE_URL = self.YOUNGRIM_ESTIMATE_URLS[0]
         
         # Ecount (ERP) Settings
         self.ECOUNT_LOGIN_URL = os.getenv("ECOUNT_LOGIN_URL", "https://login.ecount.com/Login")

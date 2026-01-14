@@ -324,13 +324,19 @@ class AutoDownloader(threading.Thread):
         browser_manager.navigate(config.YOUNGRIM_URL)
         time.sleep(3)
 
-        # 2. Download from Ledger List
-        logger.info("[Downloader] Processing Ledger List...")
-        l_new = self.download_from_page(config.YOUNGRIM_LEDGER_URL, config.DOWNLOADS_DIR / "ledger", "ledger")
+        # 2. Download from Ledger Lists (multiple pages: 산업/임업)
+        logger.info("[Downloader] Processing Ledger Lists...")
+        l_new = 0
+        for idx, ledger_url in enumerate(config.YOUNGRIM_LEDGER_URLS, 1):
+            logger.info(f"[Downloader] Processing Ledger page {idx}/{len(config.YOUNGRIM_LEDGER_URLS)}")
+            l_new += self.download_from_page(ledger_url, config.DOWNLOADS_DIR / "ledger", "ledger")
 
-        # 3. Download from Estimate List
-        logger.info("[Downloader] Processing Estimate List...")
-        e_new = self.download_from_page(config.YOUNGRIM_ESTIMATE_URL, config.DOWNLOADS_DIR / "estimate", "estimate")
+        # 3. Download from Estimate Lists (multiple pages: 산업/임업)
+        logger.info("[Downloader] Processing Estimate Lists...")
+        e_new = 0
+        for idx, estimate_url in enumerate(config.YOUNGRIM_ESTIMATE_URLS, 1):
+            logger.info(f"[Downloader] Processing Estimate page {idx}/{len(config.YOUNGRIM_ESTIMATE_URLS)}")
+            e_new += self.download_from_page(estimate_url, config.DOWNLOADS_DIR / "estimate", "estimate")
 
         if l_new == 0 and e_new == 0:
             server_status["empty_cycle_count"] += 1
