@@ -390,3 +390,54 @@ Dashboard updates every 3 seconds via JavaScript fetch.
 - Estimate 산업: 14 rows found
 - Estimate 임업: 10 rows found
 - Total: 90 order entries scanned across 4 pages
+
+### 2026-01-15: Download Logic Bug - List Page Saved Instead of Detail Page
+
+**Problem**: Downloaded HTML files contained the **list page** instead of the **detail page** content. `local_file_processor.py` returned 0 rows because the expected data table wasn't present.
+
+**Root Cause Analysis**:
+1. 영림 OMS의 "조회" 버튼 클릭 시 JavaScript `window.open()`으로 새 팝업 창이 열림
+2. Selenium이 새 창 핸들을 감지하지 못함 (Edge 브라우저 팝업 차단 또는 타이밍 이슈)
+3. Fallback 로직이 URL 변경 없음을 감지하고 현재 페이지(목록) HTML을 저장
+
+**JavaScript Button Behavior** (영림 OMS):
+```javascript
+// ledger (trans_link) 버튼
+$("body").on("click", ".trans_link", function() {
+    window.open('/oms/trans_doc.jsp?chulhano='+$(this).attr("chulhano")+'&younglim_gubun='+$("#younglim_gubun").val());
+});
+
+// estimate (estimate_link) 버튼
+$("body").on("click", ".estimate_link", function() {
+    window.open('/oms/estimate_doc.jsp?ordno='+$(this).attr("ordno")+'&younglim_gubun='+$("#younglim_gubun").val());
+});
+```
+
+**Solution**: 버튼 클릭 대신 **직접 URL 네비게이션** 방식으로 변경
+- Modified [v10_auto_server.py:435-478](v10_auto_server.py#L435-L478)
+- 상세 페이지 URL을 직접 구성하여 `driver.get()` 호출
+- 팝업 차단 문제 완전히 회피
+
+**Code Change**:
+```python
+# 변경 전: 버튼 클릭 (팝업 문제 발생)
+button_element.click()
+
+# 변경 후: 직접 URL 네비게이션
+if button_type == "ledger":
+    detail_url = f"http://door.yl.co.kr/oms/trans_doc.jsp?chulhano={button_id}&younglim_gubun={younglim_gubun}"
+else:
+    detail_url = f"http://door.yl.co.kr/oms/estimate_doc.jsp?ordno={button_id}&younglim_gubun={younglim_gubun}"
+browser_manager.driver.get(detail_url)
+```
+
+**Key Insight**:
+- 웹 자동화에서 `window.open()` 팝업은 브라우저 설정, 팝업 차단기 등에 따라 불안정함
+- 가능하면 버튼 클릭 대신 직접 URL 구성으로 네비게이션하는 것이 안정적
+- URL 파라미터는 HTML에서 파싱한 버튼 속성(`chulhano`, `ordno`)과 페이지 URL의 쿼리 파라미터(`younglim_gubun`)를 조합
+
+**Edge Browser Session Disconnection**:
+- 다운로드 중 Edge 브라우저 세션이 끊어지는 현상 발생
+- 에러: `invalid session id: session deleted as the browser has closed the connection`
+- **원인**: 장시간 자동화 중 브라우저 연결 불안정 또는 수동으로 브라우저 닫음
+- **해결**: Edge 브라우저 재시작 후 V10 서버 재시작 필요

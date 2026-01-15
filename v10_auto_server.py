@@ -404,113 +404,75 @@ class AutoDownloader(threading.Thread):
                                                 notes="No button column")
                     continue
 
-                # trans_link 클래스를 가진 버튼 찾기
+                # 버튼 찾기: trans_link (ledger) 또는 estimate_link (estimate)
                 button = button_col.find("button", class_="trans_link")
+                button_type = "ledger"
+                button_attr = "chulhano"
+
+                if not button:
+                    # estimate_link 클래스 버튼 시도
+                    button = button_col.find("button", class_="estimate_link")
+                    button_type = "estimate"
+                    button_attr = "ordno"
+
                 if not button:
                     # 디버깅: 버튼 컬럼의 HTML 구조 로그
                     logger.warning(f"[Downloader] No button found for {order_no}")
                     logger.warning(f"[DEBUG] Button column HTML: {button_col}")
-                    logger.warning(f"[DEBUG] Number of columns: {len(cols)}")
                     logger.warning(f"[DEBUG] All buttons in column: {button_col.find_all('button')}")
-                    logger.warning(f"[DEBUG] All links in column: {button_col.find_all('a')}")
                     distributed_lock.release_lock(order_no, status=DistributedLockManager.STATUS_FAILED,
                                                 notes="No download button")
                     continue
 
-                # chulhano 속성에서 번호 가져오기
-                chulhano = button.get("chulhano", "")
-                if not chulhano:
-                    logger.warning(f"[Downloader] No chulhano attribute for {order_no}")
+                # 버튼 속성에서 번호 가져오기 (chulhano for ledger, ordno for estimate)
+                button_id = button.get(button_attr, "")
+                if not button_id:
+                    logger.warning(f"[Downloader] No {button_attr} attribute for {order_no}")
                     distributed_lock.release_lock(order_no, status=DistributedLockManager.STATUS_FAILED,
-                                                notes="No chulhano")
+                                                notes=f"No {button_attr}")
                     continue
 
-                logger.info(f"[Downloader] Clicking button for {order_no} (chulhano={chulhano})")
+                logger.info(f"[Downloader] Downloading {button_type} for {order_no} ({button_attr}={button_id})")
 
-                # 현재 창 핸들 저장
-                original_window = browser_manager.driver.current_window_handle
-                original_windows = set(browser_manager.driver.window_handles)
+                # URL에서 younglim_gubun 파라미터 추출
+                from urllib.parse import urlparse, parse_qs
+                parsed = urlparse(list_url)
+                params = parse_qs(parsed.query)
+                younglim_gubun = params.get('younglim_gubun', [''])[0]
 
-                # Selenium으로 버튼 찾아서 클릭
+                # 직접 URL 네비게이션으로 상세 페이지 다운로드 (팝업 차단 문제 회피)
                 try:
-                    # 현재 URL 저장
+                    # 현재 URL 저장 (목록 페이지)
                     original_url = browser_manager.driver.current_url
 
-                    # chulhano 속성으로 버튼 찾기
-                    button_element = browser_manager.driver.find_element(By.CSS_SELECTOR, f"button.trans_link[chulhano='{chulhano}']")
-                    button_element.click()
-                    logger.info(f"[Downloader] Button clicked for {order_no}")
+                    # 상세 페이지 URL 구성
+                    if button_type == "ledger":
+                        detail_url = f"http://door.yl.co.kr/oms/trans_doc.jsp?chulhano={button_id}&younglim_gubun={younglim_gubun}"
+                    else:  # estimate
+                        detail_url = f"http://door.yl.co.kr/oms/estimate_doc.jsp?ordno={button_id}&younglim_gubun={younglim_gubun}"
 
-                    # 새 창이 열릴 때까지 대기 (최대 5초)
-                    for _ in range(10):
-                        time.sleep(0.5)
-                        new_windows = set(browser_manager.driver.window_handles) - original_windows
-                        if new_windows:
-                            break
+                    # 상세 페이지로 직접 이동
+                    logger.info(f"[Downloader] Navigating to detail page: {detail_url}")
+                    browser_manager.driver.get(detail_url)
+                    time.sleep(3)
 
-                    # 새 창이 열렸는지 확인
-                    new_windows = set(browser_manager.driver.window_handles) - original_windows
-                    if new_windows:
-                        # 새 창으로 전환
-                        new_window = new_windows.pop()
-                        browser_manager.driver.switch_to.window(new_window)
-                        logger.info(f"[Downloader] Switched to new window for {order_no}")
+                    # 상세 페이지 HTML 가져오기
+                    detail_html = browser_manager.get_source()
+                    logger.info(f"[Downloader] Retrieved detail page HTML ({len(detail_html)} bytes)")
 
-                        # 페이지 로딩 대기
-                        time.sleep(3)
+                    # 목록 페이지로 복귀
+                    browser_manager.driver.get(original_url)
+                    time.sleep(2)
+                    logger.info(f"[Downloader] Returned to list page")
 
-                        # 상세 페이지 HTML 가져오기
-                        detail_html = browser_manager.get_source()
-                        logger.info(f"[Downloader] Retrieved detail page HTML ({len(detail_html)} bytes)")
-
-                        # 새 창 닫고 원래 창으로 돌아가기
-                        browser_manager.driver.close()
-                        browser_manager.driver.switch_to.window(original_window)
-                        logger.info(f"[Downloader] Closed detail window and returned to list")
-                    else:
-                        # 같은 창에서 페이지가 변경됨 (URL 변경 확인)
-                        time.sleep(1)
-                        current_url = browser_manager.driver.current_url
-
-                        # URL이 변경되었는지 확인
-                        if current_url != original_url:
-                            logger.info(f"[Downloader] Detail page loaded in same window for {order_no}")
-                            logger.info(f"[Downloader] URL changed from {original_url} to {current_url}")
-
-                            # 페이지 로딩 대기 (상세 페이지가 완전히 로드될 때까지)
-                            time.sleep(2)
-                            detail_html = browser_manager.get_source()
-
-                            # 뒤로가기로 목록 페이지로 돌아가기
-                            browser_manager.driver.back()
-                            time.sleep(2)
-                            logger.info(f"[Downloader] Returned to list page")
-                        else:
-                            # URL이 변경되지 않음 - 팝업이나 다른 방식일 수 있음
-                            logger.warning(f"[Downloader] URL did not change after button click for {order_no}")
-                            logger.warning(f"[Downloader] This might be a popup or AJAX content")
-
-                            # 잠시 대기 후 HTML 가져오기
-                            time.sleep(3)
-                            detail_html = browser_manager.get_source()
-
-                            # 팝업이 있는지 확인하고 닫기
-                            try:
-                                # alert 확인
-                                alert = browser_manager.driver.switch_to.alert
-                                alert_text = alert.text
-                                logger.info(f"[Downloader] Alert found: {alert_text}")
-                                alert.accept()
-                            except:
-                                pass
-
-                except Exception as click_error:
-                    logger.error(f"[Downloader] Error clicking button for {order_no}: {click_error}")
+                except Exception as nav_error:
+                    logger.error(f"[Downloader] Error navigating for {order_no}: {nav_error}")
                     distributed_lock.release_lock(order_no, status=DistributedLockManager.STATUS_FAILED,
-                                                notes=f"Button click error: {str(click_error)[:100]}")
-                    # 원래 창으로 돌아가기 시도
+                                                notes=f"Navigation error: {str(nav_error)[:100]}")
+                    # 목록 페이지로 복귀 시도
                     try:
-                        browser_manager.driver.switch_to.window(original_window)
+                        browser_manager.driver.get(list_url)
+                        time.sleep(2)
                     except:
                         pass
                     continue
