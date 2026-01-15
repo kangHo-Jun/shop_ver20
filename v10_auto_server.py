@@ -4,6 +4,7 @@ import json
 import threading
 import sys
 import datetime
+import subprocess
 from flask import Flask, jsonify, request, render_template_string
 from pathlib import Path
 from selenium import webdriver
@@ -112,10 +113,16 @@ HTML_TEMPLATE = """
                 if (data.pending.ledger > 0 && data.status.ledger_uploader_status === 'Idle') {
                     lBtn.disabled = false;
                     lBtn.innerText = `⬆ Upload Ledger (${data.pending.ledger} items)`;
+                    lBtn.classList.remove('btn-gray');
+                    lBtn.classList.add('btn-blue');
                 } else {
                     lBtn.disabled = true;
                     if (data.status.ledger_uploader_status === 'Running') lBtn.innerText = '⏳ Processing...';
-                    else lBtn.innerText = '⬆ No new items to upload';
+                    else {
+                        lBtn.innerText = '⬆ No items to upload';
+                        lBtn.classList.add('btn-gray');
+                        lBtn.classList.remove('btn-blue');
+                    }
                 }
 
                 // Update Estimate
@@ -125,10 +132,16 @@ HTML_TEMPLATE = """
                 if (data.pending.estimate > 0 && data.status.estimate_uploader_status === 'Idle') {
                     eBtn.disabled = false;
                     eBtn.innerText = `⬆ Upload Estimate (${data.pending.estimate} items)`;
+                    eBtn.classList.remove('btn-gray');
+                    eBtn.classList.add('btn-orange');
                 } else {
                     eBtn.disabled = true;
                     if (data.status.estimate_uploader_status === 'Running') eBtn.innerText = '⏳ Processing...';
-                    else eBtn.innerText = '⬆ No new items to upload';
+                    else {
+                        eBtn.innerText = '⬆ No items to upload';
+                        eBtn.classList.add('btn-gray');
+                        eBtn.classList.remove('btn-orange');
+                    }
                 }
             } catch (e) { console.error("Stats update failed", e); }
         }
@@ -137,7 +150,14 @@ HTML_TEMPLATE = """
             btn.disabled = true;
             fetch(endpoint, { method: 'POST' })
                 .then(r => r.json())
-                .then(d => { setTimeout(updateStats, 1000); })
+                .then(d => { 
+                    if (d.status === 'success') {
+                        setTimeout(updateStats, 500);
+                    } else {
+                        alert("Error: " + d.message);
+                        btn.disabled = false;
+                    }
+                })
                 .catch(e => { alert(e); btn.disabled = false; });
         }
 
@@ -169,6 +189,10 @@ HTML_TEMPLATE = """
                 <div><span class="label">Status:</span><span class="val" id="dl-status">Loading...</span></div>
                 <div><span class="label">Last Run:</span><span class="val" id="dl-last">-</span></div>
             </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-blue" onclick="triggerAction('/trigger_download', this)">📩 Manual Download</button>
+                <button class="btn btn-orange" onclick="triggerAction('/trigger_download_force', this)">🔥 Force Sync (Bypass)</button>
+            </div>
         </div>
 
         <div class="card">
@@ -190,7 +214,7 @@ HTML_TEMPLATE = """
         </div>
 
         <div class="card">
-            <h2>⚙️ Control</h2>
+            <h2>⚙️ Server Control</h2>
             <button class="btn btn-gray" onclick="triggerAction('/reset_status', this)">🔄 Reset Server Status</button>
         </div>
 
@@ -305,17 +329,18 @@ class AutoDownloader(threading.Thread):
                     wait_sec = min(wait_sec * 2, 7200) # Max 2 hours
                     logger.info(f"[Downloader] Consecutive empty cycles detected ({server_status['empty_cycle_count']}). Extending wait to {wait_sec//60} min.")
 
-                for _ in range(wait_sec // 5):
-                    if not self.running: break
+                # Wait loop with termination check
+                for _ in range(max(1, wait_sec // 5)):
+                    if not self.running or self.active_mode == False: break # Force stop or deactivation
                     time.sleep(5)
             else:
                 time.sleep(2)
 
-    def download_cycle(self):
+    def download_cycle(self, force_mode=False):
         server_status["downloader_status"] = "Running"
         server_status["downloader_last_run"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        logger.info("[Downloader] Starting cycle...")
+        logger.info(f"[Downloader] Starting cycle (Force Mode: {force_mode})...")
 
         # 1. Launch/Check Browser
         browser_manager.launch()
@@ -329,14 +354,14 @@ class AutoDownloader(threading.Thread):
         l_new = 0
         for idx, ledger_url in enumerate(config.YOUNGRIM_LEDGER_URLS, 1):
             logger.info(f"[Downloader] Processing Ledger page {idx}/{len(config.YOUNGRIM_LEDGER_URLS)}")
-            l_new += self.download_from_page(ledger_url, config.DOWNLOADS_DIR / "ledger", "ledger")
+            l_new += self.download_from_page(ledger_url, config.DOWNLOADS_DIR / "ledger", "ledger", force_mode=force_mode)
 
         # 3. Download from Estimate Lists (multiple pages: 산업/임업)
         logger.info("[Downloader] Processing Estimate Lists...")
         e_new = 0
         for idx, estimate_url in enumerate(config.YOUNGRIM_ESTIMATE_URLS, 1):
             logger.info(f"[Downloader] Processing Estimate page {idx}/{len(config.YOUNGRIM_ESTIMATE_URLS)}")
-            e_new += self.download_from_page(estimate_url, config.DOWNLOADS_DIR / "estimate", "estimate")
+            e_new += self.download_from_page(estimate_url, config.DOWNLOADS_DIR / "estimate", "estimate", force_mode=force_mode)
 
         if l_new == 0 and e_new == 0:
             server_status["empty_cycle_count"] += 1
@@ -348,14 +373,15 @@ class AutoDownloader(threading.Thread):
         server_status["downloader_status"] = "Idle"
         logger.info("[Downloader] Cycle complete. Waiting for next interval.")
 
-    def download_from_page(self, list_url, save_dir, doc_type):
+    def download_from_page(self, list_url, save_dir, doc_type, force_mode=False):
         """
-        V10: Enhanced with distributed lock checking
+        V10: Enhanced with distributed lock checking and Force Mode
 
         Args:
             list_url: URL of the list page
             save_dir: Directory to save downloads
             doc_type: 'ledger' or 'estimate'
+            force_mode: If True, bypass history and lock checks
         """
         logger.info(f"[Downloader] Fetching page: {list_url}")
         browser_manager.navigate(list_url)
@@ -383,17 +409,21 @@ class AutoDownloader(threading.Thread):
                 continue
 
             # V10: Check distributed lock BEFORE checking local history
-            if not distributed_lock.acquire_lock(order_no, notes=f"Download attempt from {doc_type}"):
-                logger.info(f"[V10] Order {order_no} is locked by another machine or already completed - skipping")
-                continue
+            # SKIP if lock exists and NOT in force mode
+            if not force_mode:
+                if not distributed_lock.acquire_lock(order_no, notes=f"Download attempt from {doc_type}"):
+                    logger.info(f"[V10] Order {order_no} is locked by another machine or already completed - skipping")
+                    continue
 
-            # Check local history (backward compatibility)
-            if order_no in history.get(doc_type, []):
-                logger.info(f"[Downloader] {order_no} already in local history - skipping")
-                # Release lock since we're skipping
-                distributed_lock.release_lock(order_no, status=DistributedLockManager.STATUS_COMPLETED,
-                                            notes="Already in local history")
-                continue
+                # Check local history (backward compatibility)
+                if order_no in history.get(doc_type, []):
+                    logger.info(f"[Downloader] {order_no} already in local history - skipping")
+                    # Release lock since we're skipping
+                    distributed_lock.release_lock(order_no, status=DistributedLockManager.STATUS_COMPLETED,
+                                                notes="Already in local history")
+                    continue
+            else:
+                logger.info(f"[Downloader] FORCE MODE: Bypassing checks for {order_no}")
 
             try:
                 # Find download button (버튼은 마지막 컬럼에 있음)
@@ -478,7 +508,8 @@ class AutoDownloader(threading.Thread):
                     continue
 
                 # Save to file
-                filename = f"{order_no}.html"
+                # V10: Unique filename using order_no and button_id
+                filename = f"{order_no}_{button_id}.html"
                 filepath = save_dir / filename
 
                 with open(filepath, 'w', encoding='utf-8') as f:
@@ -487,12 +518,16 @@ class AutoDownloader(threading.Thread):
                 logger.info(f"[Downloader] ✅ Saved {filepath}")
 
                 # Add to local history
-                history[doc_type].append(order_no)
+                # Use UNIQUE key for history in unique filename mode
+                history_key = f"{order_no}_{button_id}"
+                if doc_type not in history: history[doc_type] = []
+                history[doc_type].append(history_key)
                 save_history(history)
 
                 # V10: Update lock status to completed
+                # Use same order_no for lock (distributed lock uses order_no as ID)
                 distributed_lock.release_lock(order_no, status=DistributedLockManager.STATUS_COMPLETED,
-                                            notes="Download successful")
+                                            notes=f"Download successful (ID: {button_id})")
 
                 downloaded_count += 1
 
@@ -525,8 +560,13 @@ def get_stats():
     ledger_history_set = set(history.get("ledger", []))
     estimate_history_set = set(history.get("estimate", []))
 
+    # Calculate pending based on existence vs history
+    # stem is now {order_no}_{button_id}
     ledger_pending = ledger_ids - ledger_history_set
     estimate_pending = estimate_ids - estimate_history_set
+
+    # Also check if any older format files exist (without underscore)
+    # But for simplicity, we prioritize the new format
 
     return jsonify({
         "status": server_status,
@@ -710,17 +750,71 @@ def trigger_estimate_upload():
         estimate_lock.release()
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/trigger_download', methods=['POST'])
+def trigger_download():
+    """Manual download trigger"""
+    if server_status["downloader_status"] == "Running":
+        return jsonify({"status": "error", "message": "Downloader already running"}), 409
+    
+    def run_manual():
+        try:
+            downloader.download_cycle(force_mode=False)
+        except Exception as e:
+            logger.error(f"Manual download error: {e}")
+            server_status["downloader_status"] = "Idle"
+            
+    thread = threading.Thread(target=run_manual, daemon=True)
+    thread.start()
+    return jsonify({"status": "success", "message": "Manual download started"})
+
+@app.route('/trigger_download_force', methods=['POST'])
+def trigger_download_force():
+    """Manual download trigger (Force mode)"""
+    if server_status["downloader_status"] == "Running":
+        return jsonify({"status": "error", "message": "Downloader already running"}), 409
+    
+    def run_force():
+        try:
+            downloader.download_cycle(force_mode=True)
+        except Exception as e:
+            logger.error(f"Force download error: {e}")
+            server_status["downloader_status"] = "Idle"
+            
+    thread = threading.Thread(target=run_force, daemon=True)
+    thread.start()
+    return jsonify({"status": "success", "message": "Force sync started"})
+
 @app.route('/reset_status', methods=['POST'])
 def reset_status():
     server_status["last_error"] = None
     server_status["empty_cycle_count"] = 0
+    server_status["downloader_status"] = "Idle"
+    server_status["ledger_uploader_status"] = "Idle"
+    server_status["estimate_uploader_status"] = "Idle"
     return jsonify({"status": "success"})
 
 # Main Execution
+def cleanup_port(port):
+    """지정된 포트를 사용하는 프로세스를 종료합니다."""
+    try:
+        cmd = f"netstat -ano | findstr :{port}"
+        output = subprocess.check_output(cmd, shell=True).decode()
+        for line in output.strip().split('\n'):
+            if 'LISTENING' in line:
+                pid = line.strip().split()[-1]
+                logger.info(f"[Server] Cleanup: Terminating process {pid} using port {port}")
+                os.system(f"taskkill /F /PID {pid} /T")
+                time.sleep(1)
+    except:
+        pass
+
 if __name__ == "__main__":
     logger.info("=" * 60)
     logger.info("V10 Auto Server Starting - Distributed Lock Edition")
     logger.info("=" * 60)
+
+    # Ensure port is clean
+    cleanup_port(config.FLASK_PORT)
 
     # V10: Initialize distributed lock manager
     logger.info("[V10] Connecting to distributed lock manager...")

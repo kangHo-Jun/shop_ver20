@@ -471,3 +471,51 @@ filename = f"{order_no}_{button_id}.html"
 **Key Insight**:
 - 웹에서 보이는 "주문번호"가 시스템 내부적으로 항상 고유(Unique)하지 않을 수 있음.
 - 파일 저장 시에는 반드시 고유한 ID(Primary Key 역할을 하는 속성)를 파일명에 조합해야 데이터 유실을 방지할 수 있음.
+
+---
+
+### 2026-01-15: Web Dashboard Integration & Port Conflict Issues
+
+**Context**: 
+대시보드에 수동 다운로드 제어 및 업로드 버튼 분리 기능을 통합하는 과정에서 Flask 서버 접속 불가 문제 발생.
+
+**Problem**:
+1. **포트 충돌**: `http://localhost:5080` 접속 시 연결 실패. `netstat` 확인 결과 5080 포트가 여러 프로세스(PID)에 의해 중복 점유됨.
+2. **잔류 세션**: `kill_processes.bat`으로 프로세스를 종료해도 `CLOSE_WAIT`, `FIN_WAIT_2` 상태의 TCP 연결이 남아 새 서버 실행 시 충돌 발생.
+3. **근본 원인**: Windows 환경에서 프로세스 강제 종료 후에도 네트워크 스택이 즉시 정리되지 않아 포트가 해제되지 않음.
+
+**Solution Implemented**:
+1. **자동 포트 정리 로직**: `v10_auto_server.py`에 `cleanup_port()` 함수 추가. 서버 시작 전 해당 포트를 점유한 프로세스를 자동으로 탐지하고 종료.
+   ```python
+   def cleanup_port(port):
+       cmd = f"netstat -ano | findstr :{port}"
+       output = subprocess.check_output(cmd, shell=True).decode()
+       for line in output.strip().split('\n'):
+           if 'LISTENING' in line:
+               pid = line.strip().split()[-1]
+               os.system(f"taskkill /F /PID {pid} /T")
+   ```
+2. **프로세스 정리 스크립트**: `kill_processes.bat` 생성하여 Python 및 Edge 프로세스를 일괄 종료.
+
+**Partial Solution (Requires System Restart)**:
+- 자동 포트 정리 로직만으로는 완전히 해결되지 않음. 잔류 TCP 세션이 남아있는 경우 **시스템 재시작**이 필요함.
+- 재시작 후 `start_edge_debug.bat` → `run_v10_server.bat` 순서로 실행하면 정상 작동.
+
+**Dashboard Enhancements**:
+1. **수동 다운로드 버튼**: [📩 Manual Download], [🔥 Force Sync (Bypass)] 추가.
+2. **업로드 버튼 분리**: 원장/견적 업로드 버튼을 각각 배치하고, 처리할 파일이 있을 때만 활성화.
+3. **고유 파일명 시스템**: `{order_no}_{button_id}.html` 형식으로 저장하여 동일 날짜 주문 덮어쓰기 방지.
+
+**Future Improvements Needed**:
+1. **포트 충돌 근본 해결**: 
+   - Flask 서버 시작 전 포트 상태를 더 정확히 체크하고, 필요 시 대기 시간(grace period)을 두어 TCP 세션이 완전히 종료될 때까지 기다림.
+   - 또는 동적 포트 할당 방식 검토 (5080 고정 대신 사용 가능한 포트 자동 선택).
+2. **서버 재시작 자동화**: 
+   - 포트 충돌 감지 시 자동으로 기존 프로세스를 종료하고 재시작하는 로직 추가.
+3. **Health Check 엔드포인트**: 
+   - `/health` 엔드포인트를 추가하여 서버가 정상적으로 응답하는지 확인할 수 있도록 개선.
+
+**Key Insight**:
+- Windows 환경에서는 프로세스 종료 후에도 네트워크 리소스가 즉시 해제되지 않을 수 있음.
+- 개발 환경에서는 시스템 재시작이 가장 확실한 해결책이지만, 프로덕션 환경을 고려하면 더 견고한 포트 관리 메커니즘이 필요함.
+- Flask 개발 서버 대신 프로덕션 WSGI 서버(예: Waitress, Gunicorn) 사용을 검토할 필요가 있음.
