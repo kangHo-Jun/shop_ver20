@@ -17,8 +17,10 @@ google_token.pickle
 *.pickle
 ecount_session.json
 
-# Browser Profile (3439 files)
+# Browser Profiles (large directories)
 avast_automation_profile/
+edge_automation_profile/
+test_browser_profile/
 
 # Data & Logs
 data/downloads/
@@ -36,12 +38,10 @@ debug_*.html
 test_*.py
 analyze_*.py
 list_debug.html
+test_*.html
 
 # Excel Templates (실제 데이터)
 Template*.xlsx
-
-# Batch Files (user-specific)
-ㅊㅊㅊㅊㅊㅊ
 
 # IDE
 .vscode/
@@ -54,7 +54,13 @@ Template*.xlsx
 .DS_Store
 Thumbs.db
 desktop.ini
+NUL
 
 # Temporary Files
 *.tmp
 *.bak
+tmpclaude-*
+
+# Keep these folders tracked (whitelist)
+# !.claude/
+# !docs/
