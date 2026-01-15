@@ -11,6 +11,10 @@ This is a **Youngrim Order Automation System** that automatically downloads orde
 
 The system is designed for Windows environments and uses browser automation (Selenium/Playwright) to interact with web interfaces.
 
+## Development Policy
+
+- **Auto-commit**: ON. Every successful task completion must be followed by a git commit with a descriptive message.
+
 ## Running the System
 
 ### V8 (Single Machine)
@@ -441,3 +445,29 @@ browser_manager.driver.get(detail_url)
 - 에러: `invalid session id: session deleted as the browser has closed the connection`
 - **원인**: 장시간 자동화 중 브라우저 연결 불안정 또는 수동으로 브라우저 닫음
 - **해결**: Edge 브라우저 재시작 후 V10 서버 재시작 필요
+### 2026-01-15: Filename Collision & Force Download for Specific Date
+
+**Problem**: 
+1. `order_no`가 날짜(예: `26-01-15`)인 경우, 여러 주문이 같은 번호를 공유하여 파일 덮어쓰기가 발생함. 최종적으로 각 카테고리별로 1개의 파일만 남는 현상 확인.
+2. 특정 날짜 데이터만 긴급히 다운로드해야 하는 상황에서 전체 다운로드 로직은 비효율적임.
+
+**Root Cause**:
+- `v10_auto_server.py` 및 `run_download_once.py`에서 `order_no`를 파일명으로 사용함.
+- 영림 OMS에서는 주문번호(`order_no`)가 날짜로 표시되는 경우가 많아 고유성이 보장되지 않음.
+
+**Solution**:
+1. **파일명 고유성 확보**: `order_no` 뒤에 버튼의 고유 ID(`chulhano` 또는 `ordno`)를 추가하여 저장 (`{order_no}_{button_id}.html`).
+2. **날짜 필터링 및 강제 다운로드**: 특정 날짜 문자열이 포함된 주문만 필터링하고, `distributed_lock` 및 `local_history`를 무시(Bypass)하는 `FORCED DOWNLOAD MODE` 구현.
+
+**Code Change (Filename)**:
+```python
+# 변경 전
+filename = f"{order_no}.html"
+
+# 변경 후
+filename = f"{order_no}_{button_id}.html"
+```
+
+**Key Insight**:
+- 웹에서 보이는 "주문번호"가 시스템 내부적으로 항상 고유(Unique)하지 않을 수 있음.
+- 파일 저장 시에는 반드시 고유한 ID(Primary Key 역할을 하는 속성)를 파일명에 조합해야 데이터 유실을 방지할 수 있음.
