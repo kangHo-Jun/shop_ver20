@@ -340,38 +340,43 @@ class AutoDownloader(threading.Thread):
         server_status["downloader_status"] = "Running"
         server_status["downloader_last_run"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        logger.info(f"[Downloader] Starting cycle (Force Mode: {force_mode})...")
+        try:
+            logger.info(f"[Downloader] Starting cycle (Force Mode: {force_mode})...")
 
-        # 1. Launch/Check Browser
-        browser_manager.launch()
+            # 1. Launch/Check Browser
+            browser_manager.launch()
 
-        logger.info(f"[Downloader] Navigating to {config.YOUNGRIM_URL} to ensure session...")
-        browser_manager.navigate(config.YOUNGRIM_URL)
-        time.sleep(3)
+            logger.info(f"[Downloader] Navigating to {config.YOUNGRIM_URL} to ensure session...")
+            browser_manager.navigate(config.YOUNGRIM_URL)
+            time.sleep(3)
 
-        # 2. Download from Ledger Lists (multiple pages: 산업/임업)
-        logger.info("[Downloader] Processing Ledger Lists...")
-        l_new = 0
-        for idx, ledger_url in enumerate(config.YOUNGRIM_LEDGER_URLS, 1):
-            logger.info(f"[Downloader] Processing Ledger page {idx}/{len(config.YOUNGRIM_LEDGER_URLS)}")
-            l_new += self.download_from_page(ledger_url, config.DOWNLOADS_DIR / "ledger", "ledger", force_mode=force_mode)
+            # 2. Download from Ledger Lists (multiple pages: 산업/임업)
+            logger.info("[Downloader] Processing Ledger Lists...")
+            l_new = 0
+            for idx, ledger_url in enumerate(config.YOUNGRIM_LEDGER_URLS, 1):
+                logger.info(f"[Downloader] Processing Ledger page {idx}/{len(config.YOUNGRIM_LEDGER_URLS)}")
+                l_new += self.download_from_page(ledger_url, config.DOWNLOADS_DIR / "ledger", "ledger", force_mode=force_mode)
 
-        # 3. Download from Estimate Lists (multiple pages: 산업/임업)
-        logger.info("[Downloader] Processing Estimate Lists...")
-        e_new = 0
-        for idx, estimate_url in enumerate(config.YOUNGRIM_ESTIMATE_URLS, 1):
-            logger.info(f"[Downloader] Processing Estimate page {idx}/{len(config.YOUNGRIM_ESTIMATE_URLS)}")
-            e_new += self.download_from_page(estimate_url, config.DOWNLOADS_DIR / "estimate", "estimate", force_mode=force_mode)
+            # 3. Download from Estimate Lists (multiple pages: 산업/임업)
+            logger.info("[Downloader] Processing Estimate Lists...")
+            e_new = 0
+            for idx, estimate_url in enumerate(config.YOUNGRIM_ESTIMATE_URLS, 1):
+                logger.info(f"[Downloader] Processing Estimate page {idx}/{len(config.YOUNGRIM_ESTIMATE_URLS)}")
+                e_new += self.download_from_page(estimate_url, config.DOWNLOADS_DIR / "estimate", "estimate", force_mode=force_mode)
 
-        if l_new == 0 and e_new == 0:
-            server_status["empty_cycle_count"] += 1
-            logger.info("[Downloader] No new files downloaded this cycle.")
-        else:
-            server_status["empty_cycle_count"] = 0
-            logger.info(f"[Downloader] Downloaded {l_new} ledger + {e_new} estimate files.")
-
-        server_status["downloader_status"] = "Idle"
-        logger.info("[Downloader] Cycle complete. Waiting for next interval.")
+            if l_new == 0 and e_new == 0:
+                server_status["empty_cycle_count"] += 1
+                logger.info("[Downloader] No new files downloaded this cycle.")
+            else:
+                server_status["empty_cycle_count"] = 0
+                logger.info(f"[Downloader] Downloaded {l_new} ledger + {e_new} estimate files.")
+        
+        except Exception as e:
+            logger.error(f"[Downloader] Cycle failed: {e}")
+            raise e
+        finally:
+            server_status["downloader_status"] = "Idle"
+            logger.info("[Downloader] Cycle complete. Waiting for next interval.")
 
     def download_from_page(self, list_url, save_dir, doc_type, force_mode=False):
         """

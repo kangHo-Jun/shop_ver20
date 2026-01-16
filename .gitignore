@@ -4,63 +4,65 @@ __pycache__/
 *$py.class
 *.so
 .Python
-.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environment & Virtual Env
+.env
+.venv
+env/
 venv/
 ENV/
-env/
+env.bak/
+venv.bak/
 
-# Sensitive Information
-.env
+# Project Secrets (CRITICAL)
 google_oauth_credentials.json
-client_secret*.json
 google_token.pickle
-*.pickle
 ecount_session.json
 
-# Browser Profiles (large directories)
-avast_automation_profile/
+# Logs & History
+logs/
+*_history.json
+*.log
+
+# Runtime Data
+data/downloads/
 edge_automation_profile/
 test_browser_profile/
+test_download_*.html
+test_download_*.mhtml
+tmp*/
 
-# Data & Logs
-data/downloads/
-logs/
-*.log
-server_stdout.txt
-
-# History Files
-*_history.json
-
-# Debug Files
-debug_*.py
-debug_*.png
-debug_*.html
-test_*.py
-analyze_*.py
-list_debug.html
-test_*.html
-
-# Excel Templates (실제 데이터)
-Template*.xlsx
-
-# IDE
-.vscode/
+# IDE & OS
 .idea/
+.vscode/
 *.swp
-*.swo
-*~
-
-# OS
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# User Exceptions (Allowed)
+# !docs/  <-- Already included by default
+# !.claude/ <-- Already included by default
+
+# Invalid Windows Files
 NUL
 
-# Temporary Files
-*.tmp
-*.bak
-tmpclaude-*
-
-# Keep these folders tracked (whitelist)
-# !.claude/
-# !docs/
+# Temporary Artifacts
+tmpclaude*
